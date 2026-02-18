@@ -33,7 +33,7 @@ export default async function RootLayout({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08)_0%,_rgba(9,7,7,0)_45%)]" />
           <main className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col border-x border-white/10">
             <header className="sticky top-0 z-50 border-b border-white/10 bg-[#090707]/80 px-6 py-4 backdrop-blur-md md:px-12">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-wrap items-start justify-between gap-4">
                 <Link
                   href="/"
                   className="font-mono text-xl font-extrabold tracking-tighter text-white md:text-2xl"
@@ -41,28 +41,28 @@ export default async function RootLayout({
                   replyify
                 </Link>
 
-                <nav className="hidden items-center gap-7 lg:flex">
+                <nav className="order-3 flex w-full items-center gap-4 overflow-x-auto whitespace-nowrap pb-1 text-sm font-semibold text-zinc-400 sm:gap-6 md:order-2 md:w-auto">
                   <Link
                     href="/#features"
-                    className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+                    className="transition-colors hover:text-white"
                   >
                     Features
                   </Link>
                   <Link
                     href="/#how-it-works"
-                    className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+                    className="transition-colors hover:text-white"
                   >
                     How it works
                   </Link>
                   <Link
                     href="/pricing"
-                    className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+                    className="transition-colors hover:text-white"
                   >
                     Pricing
                   </Link>
                   <Link
                     href="/download"
-                    className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+                    className="transition-colors hover:text-white"
                   >
                     Download
                   </Link>
@@ -70,7 +70,7 @@ export default async function RootLayout({
 
                 {user ? (
                   <form
-                    className="flex items-center gap-4"
+                    className="order-2 flex items-center gap-2 sm:gap-4 md:order-3"
                     action={async () => {
                       "use server";
                       await signOut();
