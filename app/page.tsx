@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, Bot, MessageSquare, Sparkles, Youtube } from "lucide-react";
+import {
+  ArrowRight,
+  Bot,
+  MessageSquare,
+  Sparkles,
+  Youtube,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,30 +23,41 @@ export default function Home() {
             replyify
           </Link>
           <nav className="hidden items-center gap-9 text-xs text-zinc-300 md:flex">
-            <a href="#features" className="transition-colors hover:text-zinc-100">
+            <a
+              href="#features"
+              className="transition-colors hover:text-zinc-100"
+            >
               Features
             </a>
-            <a href="#how-it-works" className="transition-colors hover:text-zinc-100">
+            <a
+              href="#how-it-works"
+              className="transition-colors hover:text-zinc-100"
+            >
               How it works
             </a>
-            <a href="#waitlist" className="transition-colors hover:text-zinc-100">
+            <a
+              href="#waitlist"
+              className="transition-colors hover:text-zinc-100"
+            >
               Waitlist
             </a>
           </nav>
-          <Button size="sm">Start free</Button>
+          <Button size="sm">Login</Button>
         </header>
 
         <section className="border-b border-white/10 px-6 py-18 md:px-12 md:py-24">
           <div className="mb-7 inline-flex items-center gap-2 border border-white/15 bg-white/5 px-3 py-1 text-xs text-zinc-300">
-            <span className="bg-zinc-100 px-2 py-0.5 font-semibold text-zinc-900">New</span>
+            <span className="bg-zinc-100 px-2 py-0.5 font-semibold text-zinc-900">
+              New
+            </span>
             Auto-reply to YouTube comments with your voice.
           </div>
           <h1 className="max-w-4xl font-mono text-3xl font-semibold leading-tight tracking-tight md:text-5xl">
             The AI comment agent for YouTube creators.
           </h1>
           <p className="mt-8 max-w-3xl text-xl leading-9 text-zinc-400">
-            Replyify reviews every incoming comment, drafts a high-quality reply in your tone,
-            and publishes automatically or queues for approval.
+            Replyify reviews every incoming comment, drafts a high-quality reply
+            in your tone, and publishes automatically or queues for approval.
           </p>
           <div className="mt-12 grid gap-4 sm:flex">
             <Button size="lg" className="text-base">
@@ -68,34 +85,46 @@ export default function Home() {
         >
           <article className="border-b border-white/10 p-8 md:border-b-0 md:border-r md:border-white/10 md:p-10">
             <Youtube className="mb-7 size-5 text-zinc-200" />
-            <h2 className="text-2xl font-semibold text-zinc-100">Native YouTube sync</h2>
+            <h2 className="text-2xl font-semibold text-zinc-100">
+              Native YouTube sync
+            </h2>
             <p className="mt-4 text-zinc-400">
-              Pulls new comments in real time and keeps every thread statefully in context.
+              Pulls new comments in real time and keeps every thread statefully
+              in context.
             </p>
           </article>
           <article className="border-b border-white/10 p-8 md:border-b-0 md:border-r md:border-white/10 md:p-10">
             <Sparkles className="mb-7 size-5 text-zinc-200" />
-            <h2 className="text-2xl font-semibold text-zinc-100">Voice-matched replies</h2>
+            <h2 className="text-2xl font-semibold text-zinc-100">
+              Voice-matched replies
+            </h2>
             <p className="mt-4 text-zinc-400">
-              Trains on your existing comments and scripts to mirror your brand tone accurately.
+              Trains on your existing comments and scripts to mirror your brand
+              tone accurately.
             </p>
           </article>
           <article className="p-8 md:p-10">
             <Bot className="mb-7 size-5 text-zinc-200" />
-            <h2 className="text-2xl font-semibold text-zinc-100">Guardrails built in</h2>
+            <h2 className="text-2xl font-semibold text-zinc-100">
+              Guardrails built in
+            </h2>
             <p className="mt-4 text-zinc-400">
-              Filter spam, block risky claims, and escalate edge cases before anything goes live.
+              Filter spam, block risky claims, and escalate edge cases before
+              anything goes live.
             </p>
           </article>
         </section>
 
-        <section id="how-it-works" className="border-b border-white/10 px-6 py-16 md:px-12 md:py-20">
+        <section
+          id="how-it-works"
+          className="border-b border-white/10 px-6 py-16 md:px-12 md:py-20"
+        >
           <h3 className="max-w-2xl text-3xl font-semibold leading-tight md:text-4xl">
             Built to protect creator time without losing human connection.
           </h3>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-400">
-            Replyify chooses the right model for each thread, cites context, and keeps each answer
-            short, relevant, and on-brand.
+            Replyify chooses the right model for each thread, cites context, and
+            keeps each answer short, relevant, and on-brand.
           </p>
           <Button variant="outline" className="mt-8">
             <MessageSquare />
@@ -103,13 +132,20 @@ export default function Home() {
           </Button>
         </section>
 
-        <section id="waitlist" className="border-b border-white/10 px-6 py-14 md:px-12">
+        <section
+          id="waitlist"
+          className="border-b border-white/10 px-6 py-14 md:px-12"
+        >
           <h4 className="text-3xl font-semibold">Get early access</h4>
           <p className="mt-4 text-zinc-400">
             Join creators testing fully automatic replies before public launch.
           </p>
           <form className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Input type="email" placeholder="Email address" className="sm:h-12" />
+            <Input
+              type="email"
+              placeholder="Email address"
+              className="sm:h-12"
+            />
             <Button type="submit" className="sm:h-12 sm:px-7">
               Join waitlist
             </Button>
