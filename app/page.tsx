@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -16,57 +17,77 @@ export default async function Home() {
   const signInUrl = await getSignInUrl();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#090707] text-zinc-100">
+    <div className="relative min-h-screen overflow-clip bg-[#090707] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08)_0%,_rgba(9,7,7,0)_45%)]" />
       <main className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col border-x border-white/10">
-        <header className="flex items-center justify-between border-b border-white/10 px-6 py-5 md:px-12">
-          <Link
-            href="/"
-            className="font-mono text-lg font-bold tracking-tight text-zinc-100 md:text-xl"
-          >
-            replyify
-          </Link>
-          <nav className="hidden items-center gap-9 text-xs text-zinc-300 md:flex">
-            <a
-              href="#features"
-              className="transition-colors hover:text-zinc-100"
+        <header className="sticky top-0 z-50 border-b border-white/10 bg-[#090707]/80 px-6 py-4 backdrop-blur-md md:px-12">
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="font-mono text-xl font-extrabold tracking-tighter text-white md:text-2xl"
             >
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              className="transition-colors hover:text-zinc-100"
-            >
-              How it works
-            </a>
-            <a
-              href="#waitlist"
-              className="transition-colors hover:text-zinc-100"
-            >
-              Waitlist
-            </a>
-          </nav>
-
-          {user ? (
-            <form
-              className="flex items-center gap-3"
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-            >
-              <p className="hidden text-xs text-zinc-400 md:block">
-                Welcome back, {user.firstName ?? "creator"}
-              </p>
-              <Button size="sm" type="submit">
-                Sign Out
-              </Button>
-            </form>
-          ) : (
-            <Link href={signInUrl} className={buttonVariants({ size: "sm" })}>
-              Sign In
+              replyify
             </Link>
-          )}
+
+            <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
+              <a
+                href="#features"
+                className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+              >
+                Features
+              </a>
+              <a
+                href="#how-it-works"
+                className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+              >
+                How it works
+              </a>
+              <a
+                href="#waitlist"
+                className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+              >
+                Waitlist
+              </a>
+              <Link
+                href="/pricing"
+                className="text-sm font-semibold text-zinc-400 transition-colors hover:text-white"
+              >
+                Pricing
+              </Link>
+            </nav>
+
+            {user ? (
+              <form
+                className="flex items-center gap-4"
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
+              >
+                <div className="hidden items-center gap-3 md:flex">
+                  {user.profilePictureUrl && (
+                    <Image
+                      src={user.profilePictureUrl}
+                      alt={user.firstName ?? "User"}
+                      width={28}
+                      height={28}
+                      className="rounded-full ring-2 ring-white/20"
+                    />
+                  )}
+                  <p className="text-sm font-medium text-zinc-400">
+                    {user.firstName ?? "creator"}
+                  </p>
+                </div>
+                <Button size="sm" type="submit">
+                  Sign Out
+                </Button>
+              </form>
+            ) : (
+              <Link href={signInUrl} className={buttonVariants({ size: "sm" })}>
+                Sign In
+              </Link>
+            )}
+          </div>
         </header>
 
         <section className="border-b border-white/10 px-6 py-18 md:px-12 md:py-24">
