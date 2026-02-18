@@ -7,10 +7,14 @@ import {
   Youtube,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getSignInUrl, signOut, withAuth } from "@workos-inc/authkit-nextjs";
 
-export default function Home() {
+export default async function Home() {
+  const { user } = await withAuth();
+  const signInUrl = await getSignInUrl();
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#090707] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08)_0%,_rgba(9,7,7,0)_45%)]" />
@@ -42,7 +46,27 @@ export default function Home() {
               Waitlist
             </a>
           </nav>
-          <Button size="sm">Login</Button>
+
+          {user ? (
+            <form
+              className="flex items-center gap-3"
+              action={async () => {
+                "use server";
+                await signOut();
+              }}
+            >
+              <p className="hidden text-xs text-zinc-400 md:block">
+                Welcome back, {user.firstName ?? "creator"}
+              </p>
+              <Button size="sm" type="submit">
+                Sign Out
+              </Button>
+            </form>
+          ) : (
+            <Link href={signInUrl} className={buttonVariants({ size: "sm" })}>
+              Sign In
+            </Link>
+          )}
         </header>
 
         <section className="border-b border-white/10 px-6 py-18 md:px-12 md:py-24">
