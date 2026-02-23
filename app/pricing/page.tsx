@@ -57,6 +57,24 @@ const tiers = [
 
 type Plan = "starter" | "pro" | "scale";
 
+function resolveBillingBaseUrl() {
+  const configuredUrl =
+    process.env.CONVEX_BILLING_SITE_URL ??
+    process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??
+    process.env.NEXT_PUBLIC_CONVEX_URL ??
+    process.env.VITE_CONVEX_URL;
+
+  if (!configuredUrl) {
+    return null;
+  }
+
+  const trimmed = configuredUrl.endsWith("/")
+    ? configuredUrl.slice(0, -1)
+    : configuredUrl;
+
+  return trimmed.replace(".convex.cloud", ".convex.site");
+}
+
 async function updateCurrentUserPlan(formData: FormData) {
   "use server";
 
@@ -75,39 +93,55 @@ async function updateCurrentUserPlan(formData: FormData) {
     redirect(signInUrl);
   }
 
-  const convexSiteUrl = process.env.CONVEX_BILLING_SITE_URL;
+  const convexSiteUrl = resolveBillingBaseUrl();
   const billingWebhookSecret = process.env.BILLING_WEBHOOK_SECRET;
 
   if (!convexSiteUrl || !billingWebhookSecret) {
     throw new Error(
-      "Missing CONVEX_BILLING_SITE_URL or BILLING_WEBHOOK_SECRET in replyify-web env."
+      "Missing billing URL or BILLING_WEBHOOK_SECRET in replyify-web env."
     );
   }
 
-  const response = await fetch(
+  const requestBody = JSON.stringify({
+    externalUserId: user.id,
+    plan: selectedPlan,
+  });
+
+  const endpoints = [
     `${convexSiteUrl}/billing/update-paying-status`,
-    {
+    `${convexSiteUrl}/update-paying-status`,
+  ];
+
+  let lastStatus: number | null = null;
+  let lastErrorText = "";
+
+  for (const endpoint of endpoints) {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${billingWebhookSecret}`,
       },
-      body: JSON.stringify({
-        externalUserId: user.id,
-        plan: selectedPlan,
-      }),
+      body: requestBody,
       cache: "no-store",
-    }
-  );
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Failed to mark user as paying (${response.status}): ${errorText}`
-    );
+    if (response.ok) {
+      redirect("/pricing?updated=1");
+    }
+
+    lastStatus = response.status;
+    lastErrorText = await response.text();
+
+    // Retry alternate route only for 404 route misses.
+    if (response.status !== 404) {
+      break;
+    }
   }
 
-  redirect("/pricing?updated=1");
+  throw new Error(
+    `Failed to mark user as paying (${lastStatus ?? "unknown"}): ${lastErrorText}`
+  );
 }
 
 type PayingStatusResult = {
