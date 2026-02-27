@@ -71,24 +71,14 @@ type PayingStatusResult = {
   exists: boolean;
 };
 
-type UserEmailResult = {
-  email: string | null;
-};
-
 const getPayingStatus = makeFunctionReference<
   "query",
   { externalUserId: string },
   PayingStatusResult
 >("users:getPayingStatus");
 
-const getUserByExternalId = makeFunctionReference<
-  "query",
-  { externalUserId: string },
-  { email: string } | null
->("users:getUserByExternalId");
-
 export default async function Pricing() {
-  let user = null;
+  let user: any = null;
   let userEmail: string | null = null;
   
   try {
@@ -96,18 +86,7 @@ export default async function Pricing() {
     user = authResult.user;
     
     if (user) {
-      const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? process.env.VITE_CONVEX_URL;
-      if (convexUrl) {
-        const client = new ConvexHttpClient(convexUrl);
-        try {
-          const userData = await client.query(getUserByExternalId, {
-            externalUserId: user.id,
-          });
-          userEmail = userData?.email ?? null;
-        } catch {
-          userEmail = null;
-        }
-      }
+      userEmail = user.email || null;
     }
   } catch (e) {
     console.error("Auth error:", e);
