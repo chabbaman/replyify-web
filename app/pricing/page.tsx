@@ -6,7 +6,15 @@ import { makeFunctionReference } from "convex/server";
 import { PricingPlanStatus } from "@/components/pricing-plan-status";
 import { SubscribeButtonClient } from "@/components/subscribe-button-client";
 
-const tiers = [
+const tiers: Array<{
+  slug: Plan;
+  name: string;
+  price: string;
+  highlight: boolean;
+  features: string[];
+  cta: string;
+  ctaVariant: "outline" | "default";
+}> = [
   {
     slug: "starter",
     name: "Starter",
@@ -70,7 +78,15 @@ const getPayingStatus = makeFunctionReference<
 >("users:getPayingStatus");
 
 export default async function Pricing() {
-  const { user } = await withAuth();
+  let user = null;
+  
+  try {
+    const authResult = await withAuth();
+    user = authResult.user;
+  } catch (e) {
+    console.error("Auth error:", e);
+  }
+  
   let currentPlan: Plan = "starter";
 
   if (user) {

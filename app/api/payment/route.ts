@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-
 export async function POST(request: NextRequest) {
   try {
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+    if (!convexUrl) {
+      return NextResponse.json(
+        { error: "Server configuration error - convex URL not set" },
+        { status: 500 }
+      );
+    }
+
+    const convex = new ConvexHttpClient(convexUrl);
+
     const body = await request.json();
     const { email, plan } = body;
 
@@ -22,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await convex.mutation("users:upsertPaymentByEmail", {
+    const result = await convex.mutation("users:upsertPaymentByEmail" as any, {
       email: email.trim().toLowerCase(),
       plan,
     });
