@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const convex = new ConvexHttpClient(convexUrl);
 
     const body = await request.json();
-    const { email, plan } = body;
+    const { email, plan, externalUserId } = body;
 
     if (!email || typeof email !== "string") {
       return NextResponse.json(
@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
     const result = await convex.mutation("users:upsertPaymentByEmail" as any, {
       email: email.trim().toLowerCase(),
       plan,
+      externalUserId: externalUserId || null,
     });
 
     return NextResponse.json({ success: true, data: result });

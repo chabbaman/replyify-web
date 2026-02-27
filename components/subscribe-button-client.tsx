@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 type Plan = "starter" | "pro" | "scale";
 
@@ -15,10 +14,11 @@ interface PlanButtonProps {
     ctaVariant: "outline" | "default";
   };
   isCurrentPlan: boolean;
+  userEmail: string | null;
+  externalUserId: string | null;
 }
 
-function PlanButton({ plan, isCurrentPlan }: PlanButtonProps) {
-  const [email, setEmail] = useState("");
+function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -26,14 +26,8 @@ function PlanButton({ plan, isCurrentPlan }: PlanButtonProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.trim()) {
-      setError("Please enter your email address");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+    if (!userEmail) {
+      setError("Please sign in to subscribe");
       return;
     }
 
@@ -48,8 +42,9 @@ function PlanButton({ plan, isCurrentPlan }: PlanButtonProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: email.trim().toLowerCase(),
+          email: userEmail,
           plan: plan.slug,
+          externalUserId,
         }),
       });
 
@@ -60,7 +55,6 @@ function PlanButton({ plan, isCurrentPlan }: PlanButtonProps) {
       }
 
       setSuccess(true);
-      setEmail("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -83,16 +77,23 @@ function PlanButton({ plan, isCurrentPlan }: PlanButtonProps) {
     );
   }
 
+  if (!userEmail) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={buttonVariants({
+          variant: plan.ctaVariant,
+          className: "w-full opacity-50 cursor-not-allowed",
+        })}
+      >
+        Sign in to subscribe
+      </button>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <Input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
-        disabled={loading}
-      />
       <button
         type="submit"
         disabled={loading}
@@ -124,11 +125,15 @@ interface SubscribeButtonClientProps {
     ctaVariant: "outline" | "default";
   }>;
   currentPlan: Plan;
+  userEmail: string | null;
+  externalUserId: string | null;
 }
 
 export function SubscribeButtonClient({
   tiers,
   currentPlan,
+  userEmail,
+  externalUserId,
 }: SubscribeButtonClientProps) {
   return (
     <>
@@ -191,6 +196,8 @@ export function SubscribeButtonClient({
                 ctaVariant: tier.ctaVariant,
               }}
               isCurrentPlan={tier.slug === currentPlan}
+              userEmail={userEmail}
+              externalUserId={externalUserId}
             />
           </div>
         </div>

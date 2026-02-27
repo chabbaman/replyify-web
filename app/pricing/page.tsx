@@ -71,18 +71,44 @@ type PayingStatusResult = {
   exists: boolean;
 };
 
+type UserEmailResult = {
+  email: string | null;
+};
+
 const getPayingStatus = makeFunctionReference<
   "query",
   { externalUserId: string },
   PayingStatusResult
 >("users:getPayingStatus");
 
+const getUserByExternalId = makeFunctionReference<
+  "query",
+  { externalUserId: string },
+  { email: string } | null
+>("users:getUserByExternalId");
+
 export default async function Pricing() {
   let user = null;
+  let userEmail: string | null = null;
   
   try {
     const authResult = await withAuth();
     user = authResult.user;
+    
+    if (user) {
+      const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? process.env.VITE_CONVEX_URL;
+      if (convexUrl) {
+        const client = new ConvexHttpClient(convexUrl);
+        try {
+          const userData = await client.query(getUserByExternalId, {
+            externalUserId: user.id,
+          });
+          userEmail = userData?.email ?? null;
+        } catch {
+          userEmail = null;
+        }
+      }
+    }
   } catch (e) {
     console.error("Auth error:", e);
   }
@@ -118,7 +144,12 @@ export default async function Pricing() {
       </section>
 
       <section className="grid gap-0 border-b border-white/10 md:grid-cols-3">
-        <SubscribeButtonClient tiers={tiers} currentPlan={currentPlan} />
+        <SubscribeButtonClient 
+          tiers={tiers} 
+          currentPlan={currentPlan}
+          userEmail={userEmail}
+          externalUserId={user?.id ?? null}
+        />
       </section>
 
       <footer className="grid text-sm text-zinc-400 md:grid-cols-4">
