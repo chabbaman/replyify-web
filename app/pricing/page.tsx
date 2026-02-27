@@ -1,11 +1,10 @@
-import { redirect } from "next/navigation";
 import { Check } from "lucide-react";
-import { getSignInUrl, withAuth } from "@workos-inc/authkit-nextjs";
+import { withAuth } from "@workos-inc/authkit-nextjs";
 import { ConvexHttpClient } from "convex/browser";
 import { makeFunctionReference } from "convex/server";
 
 import { PricingPlanStatus } from "@/components/pricing-plan-status";
-import { buttonVariants } from "@/components/ui/button";
+import { SubscribeButtonClient } from "@/components/subscribe-button-client";
 
 const tiers = [
   {
@@ -57,93 +56,6 @@ const tiers = [
 
 type Plan = "starter" | "pro" | "scale";
 
-function resolveBillingBaseUrl() {
-  const configuredUrl =
-    process.env.CONVEX_BILLING_SITE_URL ??
-    process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??
-    process.env.NEXT_PUBLIC_CONVEX_URL ??
-    process.env.VITE_CONVEX_URL;
-
-  if (!configuredUrl) {
-    return null;
-  }
-
-  const trimmed = configuredUrl.endsWith("/")
-    ? configuredUrl.slice(0, -1)
-    : configuredUrl;
-
-  return trimmed.replace(".convex.cloud", ".convex.site");
-}
-
-async function updateCurrentUserPlan(formData: FormData) {
-  "use server";
-
-  const selectedPlan = formData.get("plan");
-  if (
-    selectedPlan !== "starter" &&
-    selectedPlan !== "pro" &&
-    selectedPlan !== "scale"
-  ) {
-    throw new Error("Invalid plan selected.");
-  }
-
-  const { user } = await withAuth();
-  if (!user) {
-    const signInUrl = await getSignInUrl();
-    redirect(signInUrl);
-  }
-
-  const convexSiteUrl = resolveBillingBaseUrl();
-  const billingWebhookSecret = process.env.BILLING_WEBHOOK_SECRET;
-
-  if (!convexSiteUrl || !billingWebhookSecret) {
-    throw new Error(
-      "Missing billing URL or BILLING_WEBHOOK_SECRET in replyify-web env."
-    );
-  }
-
-  const requestBody = JSON.stringify({
-    externalUserId: user.id,
-    plan: selectedPlan,
-  });
-
-  const endpoints = [
-    `${convexSiteUrl}/billing/update-paying-status`,
-    `${convexSiteUrl}/update-paying-status`,
-  ];
-
-  let lastStatus: number | null = null;
-  let lastErrorText = "";
-
-  for (const endpoint of endpoints) {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${billingWebhookSecret}`,
-      },
-      body: requestBody,
-      cache: "no-store",
-    });
-
-    if (response.ok) {
-      redirect("/pricing?updated=1");
-    }
-
-    lastStatus = response.status;
-    lastErrorText = await response.text();
-
-    // Retry alternate route only for 404 route misses.
-    if (response.status !== 404) {
-      break;
-    }
-  }
-
-  throw new Error(
-    `Failed to mark user as paying (${lastStatus ?? "unknown"}): ${lastErrorText}`
-  );
-}
-
 type PayingStatusResult = {
   externalUserId: string;
   plan: Plan;
@@ -190,72 +102,7 @@ export default async function Pricing() {
       </section>
 
       <section className="grid gap-0 border-b border-white/10 md:grid-cols-3">
-        {tiers.map((tier, i) => (
-          <article
-            key={tier.name}
-            className={`flex flex-col p-8 md:p-10 ${
-              i < tiers.length - 1
-                ? "border-b border-white/10 md:border-b-0 md:border-r md:border-white/10"
-                : ""
-            } ${tier.highlight ? "bg-white/5" : ""}`}
-          >
-            <div className="mb-6 flex items-center gap-3">
-              <h2 className="text-2xl font-semibold text-zinc-100">{tier.name}</h2>
-              {tier.highlight && (
-                <span className="bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-900">
-                  Most popular
-                </span>
-              )}
-            </div>
-
-            <p className="mb-8">
-              <span className="font-mono text-4xl font-semibold text-white">
-                {tier.price}
-              </span>
-              <span className="text-zinc-400">/mo</span>
-            </p>
-
-            <ul className="mb-10 flex flex-col gap-3">
-              {tier.features.map((feature) => (
-                <li
-                  key={feature}
-                  className="flex items-start gap-3 text-sm text-zinc-300"
-                >
-                  <Check className="mt-0.5 size-4 shrink-0 text-zinc-400" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-auto">
-              {tier.slug === currentPlan ? (
-                <button
-                  type="button"
-                  disabled
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "w-full cursor-default opacity-80",
-                  })}
-                >
-                  Current plan
-                </button>
-              ) : (
-                <form action={updateCurrentUserPlan}>
-                  <input type="hidden" name="plan" value={tier.slug} />
-                  <button
-                    type="submit"
-                    className={buttonVariants({
-                      variant: tier.ctaVariant,
-                      className: "w-full",
-                    })}
-                  >
-                    {tier.cta === "Contact us" ? "Switch to Scale" : tier.cta}
-                  </button>
-                </form>
-              )}
-            </div>
-          </article>
-        ))}
+        <SubscribeButtonClient tiers={tiers} currentPlan={currentPlan} />
       </section>
 
       <footer className="grid text-sm text-zinc-400 md:grid-cols-4">
