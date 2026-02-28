@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type Plan = "starter" | "pro" | "scale";
 
@@ -22,12 +23,16 @@ function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButt
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [showEmailInput, setShowEmailInput] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userEmail) {
-      setError("Please sign in to subscribe");
+    const email = userEmail || emailInput;
+    
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -42,7 +47,7 @@ function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButt
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: userEmail,
+          email: email.toLowerCase(),
           plan: plan.slug,
           externalUserId,
         }),
@@ -55,6 +60,8 @@ function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButt
       }
 
       setSuccess(true);
+      setShowEmailInput(false);
+      setEmailInput("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -74,6 +81,55 @@ function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButt
       >
         Current plan
       </button>
+    );
+  }
+
+  const needsEmail = !userEmail && externalUserId;
+
+  if (needsEmail) {
+    if (!showEmailInput) {
+      return (
+        <button
+          type="button"
+          onClick={() => setShowEmailInput(true)}
+          className={buttonVariants({
+            variant: plan.ctaVariant,
+            className: "w-full",
+          })}
+        >
+          {plan.cta}
+        </button>
+      );
+    }
+
+    return (
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <Input
+          type="email"
+          placeholder="Enter your email"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          className="bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+          disabled={loading}
+          required
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className={buttonVariants({
+            variant: plan.ctaVariant,
+            className: "w-full",
+          })}
+        >
+          {loading ? "Processing..." : plan.cta}
+        </button>
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        {success && (
+          <p className="text-sm text-green-400">
+            Success! Your {plan.name} plan has been activated.
+          </p>
+        )}
+      </form>
     );
   }
 

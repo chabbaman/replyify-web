@@ -77,6 +77,12 @@ const getPayingStatus = makeFunctionReference<
   PayingStatusResult
 >("users:getPayingStatus");
 
+const getUserByExternalId = makeFunctionReference<
+  "query",
+  { externalUserId: string },
+  { email: string | null; plan: Plan; isPaying: boolean } | null
+>("users:getUserByExternalId");
+
 export default async function Pricing() {
   let user: any = null;
   let userEmail: string | null = null;
@@ -99,12 +105,18 @@ export default async function Pricing() {
     if (convexUrl) {
       const client = new ConvexHttpClient(convexUrl);
       try {
-        const status = await client.query(getPayingStatus, {
+        const userData = await client.query(getUserByExternalId, {
           externalUserId: user.id,
         });
-        currentPlan = status.plan;
-      } catch {
-        currentPlan = "starter";
+        
+        if (userData) {
+          if (!userEmail && userData.email) {
+            userEmail = userData.email;
+          }
+          currentPlan = userData.plan || "starter";
+        }
+      } catch (e) {
+        console.error("Error fetching user data:", e);
       }
     }
   }
