@@ -4,6 +4,7 @@ import { ConvexHttpClient } from "convex/browser";
 export async function POST(request: NextRequest) {
   try {
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+    console.log("[Payment API] Convex URL:", convexUrl);
     if (!convexUrl) {
       return NextResponse.json(
         { error: "Server configuration error - convex URL not set" },
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { email, plan, externalUserId } = body;
+    console.log("[Payment API] Received:", { email, plan, externalUserId });
 
     if (!email || typeof email !== "string") {
       return NextResponse.json(
@@ -30,12 +32,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+    console.log("[Payment API] Calling Convex with:", { email: normalizedEmail, plan, externalUserId });
+
     const result = await convex.mutation("users:upsertPaymentByEmail" as any, {
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
       plan,
       externalUserId: externalUserId || null,
     });
 
+    console.log("[Payment API] Convex result:", result);
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
     console.error("Payment API error:", error);

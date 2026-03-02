@@ -53,7 +53,11 @@ function PlanButton({ plan, isCurrentPlan, userEmail, externalUserId }: PlanButt
         }),
       });
 
+      console.log("Payment request sent:", { email: email.toLowerCase(), plan: plan.slug, externalUserId });
+      console.log("User email from props:", userEmail);
+
       const data = await response.json();
+      console.log("Payment response:", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to subscribe");
