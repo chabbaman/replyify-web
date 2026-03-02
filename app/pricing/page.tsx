@@ -5,6 +5,7 @@ import { makeFunctionReference } from "convex/server";
 
 import { PricingPlanStatus } from "@/components/pricing-plan-status";
 import { SubscribeButtonClient } from "@/components/subscribe-button-client";
+import { syncWorkOSUser } from "../actions";
 
 const tiers: Array<{
   slug: Plan;
@@ -99,6 +100,14 @@ export default async function Pricing() {
   }
   
   let currentPlan: Plan = "starter";
+
+  if (user && user.email) {
+    try {
+      await syncWorkOSUser(user.id, user.email);
+    } catch (e) {
+      console.error("Error syncing user:", e);
+    }
+  }
 
   if (user) {
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? process.env.VITE_CONVEX_URL;
