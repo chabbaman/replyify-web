@@ -1,4 +1,4 @@
-import { getSettings } from "./store";
+import { getSettings, addReplyRecord } from "./store";
 import {
   getMyChannel,
   getUploadVideos,
@@ -53,12 +53,24 @@ export async function runAutoReply(
 
       const parentId = topComment.id;
       if (!parentId) continue;
+
       await replyToComment(
         accessToken,
         refreshToken,
         parentId,
         settings.message
       );
+
+      addReplyRecord(googleId, {
+        videoId,
+        videoTitle:
+          video.snippet?.title ?? snippet.channelId ?? "Unknown video",
+        authorName: topComment.snippet.authorDisplayName ?? "Unknown",
+        originalComment: topComment.snippet.textOriginal ?? "",
+        replyText: settings.message,
+        repliedAt: new Date().toISOString(),
+      });
+
       totalReplied++;
     }
   }

@@ -3,10 +3,20 @@ import path from "path";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const SETTINGS_FILE = path.join(DATA_DIR, "auto-reply.json");
+const HISTORY_FILE = path.join(DATA_DIR, "reply-history.json");
 
 export type AutoReplySettings = {
   enabled: boolean;
   message: string;
+};
+
+export type ReplyRecord = {
+  videoId: string;
+  videoTitle: string;
+  authorName: string;
+  originalComment: string;
+  replyText: string;
+  repliedAt: string;
 };
 
 export async function getSettings(
@@ -35,4 +45,28 @@ export async function saveSettings(
   } catch {}
   all[googleId] = settings;
   await fs.writeFile(SETTINGS_FILE, JSON.stringify(all, null, 2));
+}
+
+export async function addReplyRecord(googleId: string, record: ReplyRecord) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  let all: Record<string, ReplyRecord[]> = {};
+  try {
+    const raw = await fs.readFile(HISTORY_FILE, "utf-8");
+    all = JSON.parse(raw);
+  } catch {}
+  if (!all[googleId]) all[googleId] = [];
+  all[googleId].unshift(record);
+  await fs.writeFile(HISTORY_FILE, JSON.stringify(all, null, 2));
+}
+
+export async function getReplyHistory(
+  googleId: string
+): Promise<ReplyRecord[]> {
+  try {
+    const raw = await fs.readFile(HISTORY_FILE, "utf-8");
+    const all = JSON.parse(raw);
+    return all[googleId] ?? [];
+  } catch {
+    return [];
+  }
 }

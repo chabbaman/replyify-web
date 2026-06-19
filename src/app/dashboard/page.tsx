@@ -5,28 +5,27 @@ import { revalidatePath } from "next/cache";
 
 export default async function AutoReplyPage() {
   const session = await getSession();
-
   const settings = await getSettings(session!.googleId);
 
   return (
-    <div className="max-w-2xl mx-auto px-8 py-12">
-      <h1 className="text-2xl font-bold text-black dark:text-white mb-2">
+    <div className="max-w-xl mx-auto px-6 py-12 sm:py-16">
+      <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
         Auto-Reply
       </h1>
-      <p className="text-zinc-500 dark:text-zinc-400 mb-8">
-        Automatically reply to comments on your YouTube videos.
+      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+        Automatically reply to comments on your videos.
       </p>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 mb-6">
+      <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-black dark:text-white">
-              Automatic Replies
-            </h2>
-            <p className="text-sm text-zinc-500 mt-1">
+            <p className="text-sm font-medium text-black dark:text-white">
+              Automatic replies
+            </p>
+            <p className="mt-1 text-xs text-neutral-500">
               {settings.enabled
-                ? "Replying to new comments automatically"
-                : "Auto-reply is turned off"}
+                ? "Active — replying to new comments"
+                : "Inactive"}
             </p>
           </div>
           <form
@@ -43,15 +42,17 @@ export default async function AutoReplyPage() {
           >
             <button
               type="submit"
-              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 dark:focus:ring-white dark:focus:ring-offset-black ${
                 settings.enabled
-                  ? "bg-blue-600"
-                  : "bg-zinc-300 dark:bg-zinc-700"
+                  ? "border-black bg-black dark:border-white dark:bg-white"
+                  : "border-neutral-300 bg-transparent dark:border-neutral-700"
               }`}
             >
               <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                  settings.enabled ? "translate-x-6" : "translate-x-1"
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform dark:bg-black ${
+                  settings.enabled
+                    ? "translate-x-[1.35rem] bg-white dark:bg-black"
+                    : "translate-x-[0.2rem] bg-black dark:bg-white"
                 }`}
               />
             </button>
@@ -59,12 +60,12 @@ export default async function AutoReplyPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 mb-6">
-        <h2 className="text-lg font-medium text-black dark:text-white mb-2">
-          Reply Message
-        </h2>
-        <p className="text-sm text-zinc-500 mb-4">
-          This message will be posted as a reply to every new comment.
+      <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+        <p className="text-sm font-medium text-black dark:text-white">
+          Reply message
+        </p>
+        <p className="mt-1 text-xs text-neutral-500">
+          Posted as a reply to every new comment.
         </p>
         <form
           action={async (formData: FormData) => {
@@ -78,30 +79,29 @@ export default async function AutoReplyPage() {
             });
             revalidatePath("/dashboard");
           }}
+          className="mt-4"
         >
           <textarea
             name="message"
             rows={3}
             defaultValue={settings.message}
-            className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none mb-3"
+            className="w-full resize-none rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-4 py-3 text-sm text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
           />
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              Save Message
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="mt-3 px-5 py-2 text-sm font-medium text-white bg-black rounded-full hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
+          >
+            Save
+          </button>
         </form>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6">
-        <h2 className="text-lg font-medium text-black dark:text-white mb-2">
-          Manual Trigger
-        </h2>
-        <p className="text-sm text-zinc-500 mb-4">
-          Check your recent videos and reply to any unaddressed comments now.
+      <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+        <p className="text-sm font-medium text-black dark:text-white">
+          Manual trigger
+        </p>
+        <p className="mt-1 text-xs text-neutral-500">
+          Scan your recent videos and reply to unaddressed comments now.
         </p>
         <form
           action={async () => {
@@ -113,10 +113,11 @@ export default async function AutoReplyPage() {
             );
             revalidatePath("/dashboard");
           }}
+          className="mt-4"
         >
           <button
             type="submit"
-            className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-5 py-2 text-sm font-medium text-white bg-black rounded-full hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
           >
             Run Now
           </button>
