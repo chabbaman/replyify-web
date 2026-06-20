@@ -1,23 +1,42 @@
-import { getSession } from "@/lib/session";
-import { getReplyHistory } from "@/lib/store";
+import { getDashboardContext } from "@/lib/dashboard";
+import { getReplyHistory } from "@/lib/store/auto-reply";
 
 export default async function HistoryPage() {
-  const session = await getSession();
-  const history = await getReplyHistory(session!.googleId);
+  const ctx = await getDashboardContext();
+
+  if (!ctx || !ctx.selectedAccount) {
+    return (
+      <div className="max-w-3xl mx-auto px-6 py-12 sm:py-16">
+        <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
+          Reply History
+        </h1>
+        <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+          {ctx && ctx.accounts.length === 0
+            ? "Link a YouTube account to see reply history."
+            : "No YouTube account selected."}
+        </p>
+      </div>
+    );
+  }
+
+  const history = await getReplyHistory(ctx.selectedAccount.id);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 sm:py-16">
-      <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
-        Reply History
-      </h1>
-      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-        Comments your account has replied to automatically.
-      </p>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
+          Reply History
+        </h1>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+          Comments your account has replied to automatically.
+        </p>
+      </div>
 
       {history.length === 0 ? (
         <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
           <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-12">
-            No replies yet. Run the auto-reply or wait for new comments.
+            No replies yet for {ctx.selectedAccount.name}. Run the auto-reply or
+            wait for new comments.
           </p>
         </div>
       ) : (

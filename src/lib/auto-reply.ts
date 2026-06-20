@@ -1,4 +1,5 @@
-import { getSettings, addReplyRecord } from "./store";
+import { getAccountById, updateYouTubeAccount } from "./store/youtube-accounts";
+import { getSettings, addReplyRecord } from "./store/auto-reply";
 import {
   getMyChannel,
   getUploadVideos,
@@ -6,19 +7,24 @@ import {
   replyToComment,
 } from "./youtube";
 
-export async function runAutoReply(
-  accessToken: string,
-  refreshToken: string,
-  googleId: string
-) {
-  const settings = await getSettings(googleId);
+export async function runAutoReply(youtubeAccountId: string) {
+  const account = await getAccountById(youtubeAccountId);
+  if (!account) {
+    return { replied: 0, message: "YouTube account not found" };
+  }
+
+  const settings = await getSettings(youtubeAccountId);
   if (!settings.enabled) {
     return { replied: 0, message: "Auto-reply is disabled" };
   }
 
-  const channel = await getMyChannel(accessToken, refreshToken);
+  const channel = await getMyChannel(account.accessToken, account.refreshToken);
   if (!channel) {
     return { replied: 0, message: "No channel found" };
+  }
+
+  if (!account.channelId && channel.id) {
+    await updateYouTubeAccount({ ...account, channelId: channel.id });
   }
 
   const uploadsId = channel.contentDetails?.relatedPlaylists?.uploads;
@@ -26,7 +32,7 @@ export async function runAutoReply(
     return { replied: 0, message: "No uploads playlist found" };
   }
 
-  const videos = await getUploadVideos(accessToken, refreshToken, uploadsId, 5);
+  const videos = await getUploadVideos(account.accessToken, account.refreshToken, uploadsId, 5);
   let totalReplied = 0;
 
   for (const video of videos) {
@@ -36,8 +42,8 @@ export async function runAutoReply(
     let threads: Awaited<ReturnType<typeof getCommentThreads>> = [];
     try {
       threads = await getCommentThreads(
-        accessToken,
-        refreshToken,
+        account.accessToken,
+        account.refreshToken,
         videoId,
         20
       );
@@ -54,20 +60,22 @@ export async function runAutoReply(
       const parentId = topComment.id;
       if (!parentId) continue;
 
+      const replyText = settings.message || "Thanks for the comment!";
+
       await replyToComment(
-        accessToken,
-        refreshToken,
+        account.accessToken,
+        account.refreshToken,
         parentId,
-        settings.message
+        replyText
       );
 
-      addReplyRecord(googleId, {
+      addReplyRecord(youtubeAccountId, {
         videoId,
         videoTitle:
           video.snippet?.title ?? snippet.channelId ?? "Unknown video",
         authorName: topComment.snippet.authorDisplayName ?? "Unknown",
         originalComment: topComment.snippet.textOriginal ?? "",
-        replyText: settings.message,
+        replyText,
         repliedAt: new Date().toISOString(),
       });
 

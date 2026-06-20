@@ -5,12 +5,9 @@ const secretKey = process.env.SESSION_SECRET || "fallback-secret-do-not-use";
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export type SessionPayload = {
-  googleId: string;
+  userId: string;
   email: string;
   name: string;
-  picture: string;
-  accessToken: string;
-  refreshToken: string;
 };
 
 export async function encrypt(payload: SessionPayload) {
@@ -21,9 +18,7 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
-export async function decrypt(
-  token: string | undefined
-): Promise<SessionPayload | null> {
+export async function decrypt(token: string | undefined): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, encodedKey, {

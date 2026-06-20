@@ -1,16 +1,23 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { signOut } from "@/lib/actions";
 
 type Props = {
-  picture: string;
   name: string;
   email: string;
 };
 
-export default function UserMenu({ picture, name, email }: Props) {
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export default function UserMenu({ name, email }: Props) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -28,9 +35,11 @@ export default function UserMenu({ picture, name, email }: Props) {
     <div ref={menuRef} className="fixed bottom-5 right-5 z-50">
       <button
         onClick={() => setOpen(!open)}
-        className="w-10 h-10 rounded-full border-2 border-neutral-200 dark:border-neutral-700 overflow-hidden hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+        className="w-10 h-10 rounded-full border-2 border-neutral-200 dark:border-neutral-700 overflow-hidden hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
       >
-        <Image src={picture} alt={name} width={40} height={40} />
+        <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+          {getInitials(name)}
+        </span>
       </button>
 
       {open && (

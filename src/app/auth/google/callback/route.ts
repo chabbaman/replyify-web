@@ -1,9 +1,19 @@
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
-import { getTokensFromCode, getUserInfo } from "@/lib/youtube";
-import { createSession } from "@/lib/session";
+import { randomUUID } from "crypto";
+import { getTokensFromCode, getUserInfo, getMyChannel } from "@/lib/youtube";
+import { getSession } from "@/lib/session";
+import * as store from "@/lib/store";
 
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const error = request.nextUrl.searchParams.get("error");
+  if (error) {
+    redirect("/dashboard");
+  }
+
   const code = request.nextUrl.searchParams.get("code");
 
   if (!code) {
@@ -33,13 +43,43 @@ export async function GET(request: NextRequest) {
     return new Response("Failed to get user profile", { status: 500 });
   }
 
-  await createSession({
-    googleId: userInfo.id ?? "",
+  const googleId = userInfo.id ?? "";
+  const existing = await store.youtubeAccounts.getAccountByGoogleId(googleId);
+  if (existing) {
+    return new Response("This YouTube account is already linked to another user.", { status: 409 });
+  }
+
+  let channelId = "";
+  try {
+    const channel = await getMyChannel(tokens.access_token, tokens.refresh_token ?? "");
+    if (channel?.id) channelId = channel.id;
+  } catch {
+    // Channel fetch is best-effort; can be updated later
+  }
+
+  const account: store.YouTubeAccount = {
+    id: randomUUID(),
+    userId: session.userId,
+    googleId,
     email: userInfo.email ?? "",
     name: userInfo.name ?? "",
     picture: userInfo.picture ?? "",
     accessToken: tokens.access_token,
     refreshToken: tokens.refresh_token ?? "",
+    channelId,
+    linkedAt: new Date().toISOString(),
+  };
+
+  await store.youtubeAccounts.createYouTubeAccount(account);
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.set("selectedAccount", account.id, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
   });
 
   redirect("/dashboard");

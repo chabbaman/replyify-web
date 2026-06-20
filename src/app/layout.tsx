@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Replyify",
   description: "Automate your YouTube replies.",
+  icons: [
+    { rel: "icon", url: "/favicon.ico", sizes: "any" },
+    { rel: "icon", url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+    { rel: "icon", url: "/favicon.png", sizes: "192x192", type: "image/png" },
+    { rel: "apple-touch-icon", url: "/favicon.png", sizes: "192x192" },
+  ],
 };
 
 export default function RootLayout({
