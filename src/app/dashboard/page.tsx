@@ -16,7 +16,7 @@ export default async function AutoReplyPage() {
           Link a YouTube account to get started.
         </p>
         {ctx && ctx.accounts.length === 0 && (
-          <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 text-center py-12">
+          <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 text-center py-12 bg-white dark:bg-black">
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               No YouTube accounts linked yet.
             </p>
@@ -45,7 +45,7 @@ export default async function AutoReplyPage() {
         </p>
       </div>
 
-      <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+      <div className="mt-8 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 bg-white dark:bg-black">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-black dark:text-white">
@@ -98,7 +98,7 @@ export default async function AutoReplyPage() {
         </div>
       </div>
 
-      <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+      <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 bg-white dark:bg-black">
         <p className="text-sm font-medium text-black dark:text-white">
           AI Customizer
         </p>

@@ -4,6 +4,7 @@ import * as store from "./store";
 
 export type DashboardContext = {
   session: NonNullable<Awaited<ReturnType<typeof getSession>>>;
+  user: store.User;
   accounts: store.YouTubeAccount[];
   selectedId: string | null;
   selectedAccount: store.YouTubeAccount | null;
@@ -12,6 +13,9 @@ export type DashboardContext = {
 export async function getDashboardContext(): Promise<DashboardContext | null> {
   const session = await getSession();
   if (!session) return null;
+
+  const user = await store.users.getUserById(session.userId);
+  if (!user) return null;
 
   const accounts = await store.youtubeAccounts.getAccountsByUserId(session.userId);
   const cookieStore = await cookies();
@@ -24,5 +28,5 @@ export async function getDashboardContext(): Promise<DashboardContext | null> {
 
   const selectedAccount = accounts.find(a => a.id === selectedId) ?? null;
 
-  return { session, accounts, selectedId, selectedAccount };
+  return { session, user, accounts, selectedId, selectedAccount };
 }

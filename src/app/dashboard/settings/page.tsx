@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getDashboardContext } from "@/lib/dashboard";
 import { removeYouTubeAccount } from "@/lib/actions";
+import ThemeToggle from "../theme-toggle";
 
 export default async function SettingsPage() {
   const ctx = await getDashboardContext();
@@ -29,7 +30,7 @@ export default async function SettingsPage() {
             ctx.accounts.map((account) => (
               <div
                 key={account.id}
-                className="flex items-center justify-between border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3"
+                className="flex items-center justify-between border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 bg-white dark:bg-black"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <Image
@@ -60,7 +61,7 @@ export default async function SettingsPage() {
               </div>
             ))
           ) : (
-            <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 text-center">
+            <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 text-center bg-white dark:bg-black">
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 No YouTube accounts linked yet.
               </p>
@@ -77,6 +78,20 @@ export default async function SettingsPage() {
           </svg>
           Link another account
         </a>
+      </div>
+
+      <div>
+        <h2 className="text-lg font-semibold text-black dark:text-white">
+          Appearance
+        </h2>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+          Toggle between light and dark mode.
+        </p>
+
+        <div className="mt-4 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 bg-white dark:bg-black flex items-center justify-between">
+          <span className="text-sm text-black dark:text-white">Dark mode</span>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );

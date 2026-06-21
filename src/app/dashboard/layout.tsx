@@ -11,6 +11,7 @@ export default async function DashboardLayout({
 }) {
   const ctx = await getDashboardContext();
   if (!ctx) redirect("/");
+  if (!ctx.user.plan) redirect("/payment-plan");
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-black">
@@ -85,13 +86,13 @@ export default async function DashboardLayout({
         </nav>
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-auto">
-        <div className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+      <main className="flex-1 flex flex-col overflow-auto stripe-bg">
+        <div className="sticky top-0 z-40 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
           <div className="flex items-center justify-end px-6 py-2.5">
-            <AccountSwitcher
-              accounts={ctx.accounts}
-              selectedId={ctx.selectedId}
-            />
+              <AccountSwitcher
+                accounts={ctx.accounts}
+                selectedId={ctx.selectedId}
+              />
           </div>
         </div>
         <div className="flex-1">

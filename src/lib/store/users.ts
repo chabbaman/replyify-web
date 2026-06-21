@@ -37,3 +37,10 @@ export async function getUserById(id: string): Promise<User | null> {
   const users = await readUsers();
   return users[id] ?? null;
 }
+
+export async function updateUser(id: string, updates: Partial<User>): Promise<void> {
+  const users = await readUsers();
+  if (!users[id]) throw new Error("User not found");
+  users[id] = { ...users[id], ...updates };
+  await writeUsers(users);
+}

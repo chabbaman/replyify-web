@@ -1,8 +1,11 @@
+export type Plan = "basic" | "pro" | "corporate";
+
 export type User = {
   id: string;
   email: string;
   passwordHash: string;
   name: string;
+  plan: Plan | null;
   createdAt: string;
 };
 

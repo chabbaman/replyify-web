@@ -38,12 +38,13 @@ export async function signUp(prevState: AuthState, formData: FormData): Promise<
     email,
     passwordHash,
     name,
+    plan: null,
     createdAt: new Date().toISOString(),
   };
 
   await store.users.createUser(user);
   await createSession({ userId: user.id, email: user.email, name: user.name });
-  redirect("/dashboard");
+  redirect("/payment-plan");
 }
 
 export async function login(prevState: AuthState, formData: FormData): Promise<AuthState> {
@@ -65,6 +66,7 @@ export async function login(prevState: AuthState, formData: FormData): Promise<A
   }
 
   await createSession({ userId: user.id, email: user.email, name: user.name });
+  if (!user.plan) redirect("/payment-plan");
   redirect("/dashboard");
 }
 
@@ -73,6 +75,14 @@ export async function signOut() {
   cookieStore.delete("session");
   cookieStore.delete("selectedAccount");
   redirect("/");
+}
+
+export async function selectPlan(plan: store.Plan) {
+  const session = await getSession();
+  if (!session) throw new Error("Not authenticated");
+
+  await store.users.updateUser(session.userId, { plan });
+  redirect("/dashboard");
 }
 
 export async function switchAccount(youtubeAccountId: string) {

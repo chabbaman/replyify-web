@@ -64,41 +64,6 @@ export default async function Home() {
           </svg>
         </div>
 
-        <div className="absolute top-10 left-10 pointer-events-none dark:opacity-30 opacity-[0.06]">
-          <svg width="60" height="60" viewBox="0 0 60 60">
-            <polyline
-              points="0,0 60,0 60,60"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
-        </div>
-        <div className="absolute top-10 right-10 pointer-events-none dark:opacity-30 opacity-[0.06]">
-          <svg width="60" height="60" viewBox="0 0 60 60">
-            <polyline
-              points="60,0 0,0 0,60"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute top-[72px] left-0 right-0 h-px pointer-events-none">
-          <svg className="w-full h-full" preserveAspectRatio="none">
-            <line
-              x1="0"
-              y1="0"
-              x2="100%"
-              y2="0"
-              stroke="currentColor"
-              strokeWidth="0.5"
-              className="dark:opacity-20 opacity-[0.06]"
-            />
-          </svg>
-        </div>
-
         <header className="flex items-center justify-between px-6 py-5 sm:px-10">
           <span className="text-lg font-semibold tracking-tight text-black dark:text-white">
             Replyify
