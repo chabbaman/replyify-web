@@ -28,7 +28,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-black stripe-bg">
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <Link href="/" className="text-lg font-semibold tracking-tight text-black dark:text-white">
           Replyify
@@ -43,6 +43,7 @@ export default function ContactPage() {
 
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-md">
+          <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 bg-white dark:bg-black">
           <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white mb-2">Contact Us</h1>
           <p className="text-sm text-neutral-500 mb-8">
             Have a question or feedback? Send us a message.
@@ -123,6 +124,7 @@ export default function ContactPage() {
               </button>
             </form>
           )}
+          </div>
         </div>
       </main>
 

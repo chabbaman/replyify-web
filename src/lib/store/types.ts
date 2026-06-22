@@ -24,7 +24,6 @@ export type YouTubeAccount = {
 
 export type AutoReplySettings = {
   enabled: boolean;
-  message: string;
   aiPersonality: string;
   aiAlwaysSay: string;
   aiChannelKnowledge: string;

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import { randomUUID } from "crypto";
+import { errorPage } from "@/lib/error-page";
 import { getTokensFromCode, getUserInfo, getMyChannel } from "@/lib/youtube";
 import { getSession } from "@/lib/session";
 import * as store from "@/lib/store";
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
 
   if (!code) {
-    return new Response("Missing authorization code", { status: 400 });
+    return errorPage("Missing Code", "No authorization code was provided.", 400);
   }
 
   let tokens;
@@ -25,14 +26,15 @@ export async function GET(request: NextRequest) {
     tokens = await getTokensFromCode(code);
   } catch (error) {
     console.error("Token exchange failed:", error);
-    return new Response(
+    return errorPage(
+      "Authentication Failed",
       "Failed to authenticate with Google. Make sure the YouTube Data API is enabled in your Google Cloud project and the redirect URI is configured correctly.",
-      { status: 500 }
+      500
     );
   }
 
   if (!tokens.access_token) {
-    return new Response("Failed to get access token", { status: 400 });
+    return errorPage("No Access Token", "Failed to get access token from Google.", 400);
   }
 
   let userInfo;
@@ -40,13 +42,17 @@ export async function GET(request: NextRequest) {
     userInfo = await getUserInfo(tokens.access_token);
   } catch (error) {
     console.error("Failed to get user info:", error);
-    return new Response("Failed to get user profile", { status: 500 });
+    return errorPage("Profile Error", "Failed to get user profile from Google.", 500);
   }
 
   const googleId = userInfo.id ?? "";
   const existing = await store.youtubeAccounts.getAccountByGoogleId(googleId);
   if (existing) {
-    return new Response("This YouTube account is already linked to another user.", { status: 409 });
+    return errorPage(
+      "Account Already Linked",
+      "This YouTube account is already linked to another user.",
+      409
+    );
   }
 
   let channelId = "";

@@ -2,6 +2,8 @@ import { getDashboardContext } from "@/lib/dashboard";
 import { getSettings } from "@/lib/store/auto-reply";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import AutoReplyButton from "./auto-reply-runner";
+import CharCountInput from "./char-count-input";
 
 export default async function AutoReplyPage() {
   const ctx = await getDashboardContext();
@@ -125,59 +127,32 @@ export default async function AutoReplyPage() {
         >
           <input type="hidden" name="youtubeAccountId" value={ctx.selectedAccount.id} />
 
-          <div>
-            <label
-              htmlFor="aiPersonality"
-              className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1.5"
-            >
-              1. Describe your AI&apos;s personality
-            </label>
-            <input
-              id="aiPersonality"
-              name="aiPersonality"
-              type="text"
-              maxLength={30}
-              defaultValue={settings.aiPersonality}
-              placeholder="e.g. Friendly and helpful"
-              className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-4 py-2.5 text-sm text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-            />
-          </div>
+          <CharCountInput
+            id="aiPersonality"
+            name="aiPersonality"
+            label="1. Describe your AI's personality"
+            maxLength={30}
+            defaultValue={settings.aiPersonality}
+            placeholder="e.g. Friendly and helpful"
+          />
 
-          <div>
-            <label
-              htmlFor="aiAlwaysSay"
-              className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1.5"
-            >
-              2. Statements you&apos;d like your AI to always say
-            </label>
-            <input
-              id="aiAlwaysSay"
-              name="aiAlwaysSay"
-              type="text"
-              maxLength={30}
-              defaultValue={settings.aiAlwaysSay}
-              placeholder="e.g. Please subscribe"
-              className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-4 py-2.5 text-sm text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-            />
-          </div>
+          <CharCountInput
+            id="aiAlwaysSay"
+            name="aiAlwaysSay"
+            label="2. Statements you'd like your AI to always say"
+            maxLength={30}
+            defaultValue={settings.aiAlwaysSay}
+            placeholder="e.g. Please subscribe"
+          />
 
-          <div>
-            <label
-              htmlFor="aiChannelKnowledge"
-              className="block text-sm text-neutral-700 dark:text-neutral-300 mb-1.5"
-            >
-              3. Channel-specific things for your AI to know
-            </label>
-            <input
-              id="aiChannelKnowledge"
-              name="aiChannelKnowledge"
-              type="text"
-              maxLength={50}
-              defaultValue={settings.aiChannelKnowledge}
-              placeholder='e.g. Movie questions → check description'
-              className="w-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-4 py-2.5 text-sm text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-            />
-          </div>
+          <CharCountInput
+            id="aiChannelKnowledge"
+            name="aiChannelKnowledge"
+            label="3. Channel-specific things for your AI to know"
+            maxLength={50}
+            defaultValue={settings.aiChannelKnowledge}
+            placeholder="e.g. Movie questions → check description"
+          />
 
           <button
             type="submit"
@@ -187,6 +162,11 @@ export default async function AutoReplyPage() {
           </button>
         </form>
       </div>
+
+      <AutoReplyButton
+        accountId={ctx.selectedAccount.id}
+        enabled={settings.enabled}
+      />
     </div>
   );
 }

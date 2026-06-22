@@ -8,7 +8,6 @@ const HISTORY_FILE = path.join(DATA_DIR, "reply-history.json");
 
 const DEFAULT_SETTINGS: AutoReplySettings = {
   enabled: false,
-  message: "Thanks for the comment!",
   aiPersonality: "",
   aiAlwaysSay: "",
   aiChannelKnowledge: "",

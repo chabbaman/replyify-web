@@ -109,7 +109,7 @@ export async function getUploadVideos(
 ) {
   const youtube = getAuthenticatedClient(accessToken, refreshToken);
   const { data } = await youtube.playlistItems.list({
-    part: ["contentDetails", "snippet"],
+    part: ["contentDetails", "snippet", "status"],
     playlistId: uploadsPlaylistId,
     maxResults,
   });

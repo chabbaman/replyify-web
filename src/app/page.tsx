@@ -7,62 +7,7 @@ export default async function Home() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-white dark:bg-black overflow-hidden">
-      <div className="relative flex-1">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 40px,
-                rgba(0,0,0,0.05) 40px,
-                rgba(0,0,0,0.05) 41px
-              ),
-              repeating-linear-gradient(
-                -45deg,
-                transparent,
-                transparent 40px,
-                rgba(0,0,0,0.05) 40px,
-                rgba(0,0,0,0.05) 41px
-              )
-            `,
-          }}
-        />
-
-        <div className="absolute -top-32 -right-32 w-96 h-96 pointer-events-none dark:opacity-20 opacity-[0.04]">
-          <svg viewBox="0 0 400 400" className="w-full h-full">
-            <polygon
-              points="200,0 400,200 200,400 0,200"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-            <polygon
-              points="200,40 360,200 200,360 40,200"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.5"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 pointer-events-none dark:opacity-20 opacity-[0.04]">
-          <svg viewBox="0 0 300 300" className="w-full h-full">
-            <polyline
-              points="0,300 150,0 300,300"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-            <polyline
-              points="30,300 150,30 270,300"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.5"
-            />
-          </svg>
-        </div>
+      <div className="relative flex-1 stripe-bg">
 
         <header className="flex items-center justify-between px-6 py-5 sm:px-10">
           <span className="text-lg font-semibold tracking-tight text-black dark:text-white">
@@ -80,6 +25,12 @@ export default async function Home() {
               className="text-sm text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors"
             >
               Contact Us
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-sm text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors"
+            >
+              Pricing
             </Link>
             {session ? (
               <Link
